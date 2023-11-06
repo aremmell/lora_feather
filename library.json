@@ -1,6 +1,6 @@
 {
     "name": "LoRa Feather",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "description": "A collection of code I created for tinkering with the LoRa boards from Adafruit.",
     "keywords": "LoRa, Adafruit, Feather",
     "repoistory": {
@@ -17,7 +17,10 @@
     ],
     "license": "MIT",
     "dependencies": {
-        "adafruit/Adafruit GFX": "^1.11.9"
+        "mikem/RadioHead": "^1.120",
+        "adafruit/Adafruit MAX1704X": "^1.0.2",
+        "adafruit/Adafruit NeoPixel": "^1.11.0",
+        "adafruit/Adafruit ST7735 and ST7789 Library": "^1.10.3"
     },
     "frameworks": "arduino",
     "platforms": "*"
