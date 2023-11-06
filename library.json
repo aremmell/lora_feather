@@ -1,0 +1,24 @@
+{
+    "name": "LoRa Feather",
+    "version": "0.1.0",
+    "description": "A collection of code I created for tinkering with the LoRa boards from Adafruit.",
+    "keywords": "LoRa, Adafruit, Feather",
+    "repoistory": {
+        "type": "git",
+        "url": ""
+    },
+    "authors": [
+        {
+            "name": "Ryan M. Lederman",
+            "email": "lederman@gmail.com",
+            "url": "https://rml.dev",
+            "maintainer": true
+        }
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "adafruit/Adafruit GFX": "^1.11.9"
+    },
+    "frameworks": "arduino",
+    "platforms": "*"
+}
