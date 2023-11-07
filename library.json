@@ -1,7 +1,7 @@
 {
     "name": "LoRa Feather",
-    "version": "0.1.4",
-    "description": "A collection of code I created for tinkering with the LoRa boards from Adafruit.",
+    "version": "0.1.6",
+    "description": "A collection of code I created for tinkering with the LoRa FeatherWings and reverse TFT ESP32-S3s from Adafruit.",
     "keywords": "LoRa, Adafruit, Feather",
     "repoistory": {
         "type": "git",

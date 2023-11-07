@@ -1,5 +1,5 @@
-#ifndef _LORA_SHARED_H_INCLUDED
-#define _LORA_SHARED_H_INCLUDED
+#ifndef _LORA_FEATHER_H_INCLUDED
+#define _LORA_FEATHER_H_INCLUDED
 
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
@@ -36,24 +36,81 @@
 #define RFM95_CS    10    // B
 #define RFM95_IRQ   9     // C
 
-class lora_shared
+class lora_feather
 {
 public:
-  lora_shared()
+  explicit lora_feather(uint8_t address)
+    : _pixel(1, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800), _rf95(RFM95_CS, RFM95_IRQ),
+      _rfmgr(_rf95, address), _display(TFT_CS, TFT_DC, TFT_RST),
+      _canvas(TFT_WIDTH, TFT_HEIGHT)
   {
     _started_at = millis();
   }
 
-  ~lora_shared() = default;
+  lora_feather() = delete;
+  ~lora_feather() = default;
 
-  static void on_setup_error(Adafruit_NeoPixel& pixel)
+  /// @brief call from setup().
+  void begin()
+  {
+    delay(STARTUP_DELAY);
+    while (!Serial) {
+      delay(10);
+    }
+
+    Serial.begin(SERIAL_BAUD);
+    Serial.print("LoRa Feather @"); Serial.print(RFM95_FREQ, 1); Serial.println("MHz");
+
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    pinMode(RFM95_RST, OUTPUT);
+    digitalWrite(RFM95_RST, LOW);
+    delay(10);
+    digitalWrite(RFM95_RST, HIGH);
+    delay(10);
+
+    _pixel.begin();
+    _pixel.setBrightness(20);
+    _pixel.fill(0xffffff);
+    _pixel.show();
+
+    if (!_rfmgr.init()) {
+      Serial.println("Radio init failed!");
+      on_setup_error();
+    }
+    Serial.println("Radio init OK!");
+
+    if (!_rf95.setFrequency(RFM95_FREQ)) {
+      Serial.println("Failed to set freq!");
+      on_setup_error();
+    }
+    Serial.print("Freq set to: "); Serial.print(RFM95_FREQ); Serial.println("MHz");
+
+    _rf95.setTxPower(RFM95_TXPWR);
+    Serial.print("Tx power set to: "); Serial.print(RFM95_TXPWR); Serial.println("dBm");
+
+    _display.init(TFT_HEIGHT, TFT_WIDTH);
+    _display.setRotation(3);
+
+    _canvas.setFont(&TFT_FONT);
+    _canvas.setTextColor(ST77XX_WHITE);
+
+    if (!_lipo.begin()) {
+      Serial.println("MAX17048 not found!");
+      on_setup_error();
+    }
+
+    Serial.print("MAX17048 OK; ID: 0x"); Serial.println(_lipo.getChipID(), HEX);
+  }
+
+  void on_setup_error()
   {
     while (true) {
-      pixel.setPixelColor(0, 0xff, 0x00, 0x00);
-      pixel.show();
+      _pixel.setPixelColor(0, 0xff, 0x00, 0x00);
+      _pixel.show();
       delay(LED_SETUP_ERROR_INTERVAL);
-      pixel.setPixelColor(0, 0x00, 0x00, 0x00);
-      pixel.show();
+      _pixel.setPixelColor(0, 0x00, 0x00, 0x00);
+      _pixel.show();
       delay(LED_SETUP_ERROR_INTERVAL);
     }
   }
@@ -181,8 +238,21 @@ public:
     return Adafruit_NeoPixel::Color(idx * 3, 255 - idx * 3, 0);
   }
 
+  RH_RF95& get_rf95() { return _rf95; }
+  RHReliableDatagram& get_reliable_dg() { return _rfmgr; }
+  Adafruit_NeoPixel& get_pixel() { return _pixel; }
+  Adafruit_MAX17048& get_lipo() { return _lipo; }
+  Adafruit_ST7789& get_display() { return _display; }
+  GFXcanvas16& get_canvas() { return _canvas; }
+
 private:
   u_long _started_at = 0UL;
+  RH_RF95 _rf95;
+  RHReliableDatagram _rfmgr;
+  Adafruit_NeoPixel _pixel;
+  Adafruit_MAX17048 _lipo;
+  Adafruit_ST7789 _display;
+  GFXcanvas16 _canvas;
 };
 
-#endif // !_LORA_SHARED_H_INCLUDED
+#endif // !_LORA_FEATHER_H_INCLUDED
