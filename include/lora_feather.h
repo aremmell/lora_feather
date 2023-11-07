@@ -53,9 +53,11 @@ public:
   /// @brief call from setup().
   void begin()
   {
-    delay(STARTUP_DELAY);
+    u_long wait = millis();
     while (!Serial) {
       delay(10);
+      if (millis() - wait > STARTUP_DELAY)
+        break;
     }
 
     Serial.begin(SERIAL_BAUD);
