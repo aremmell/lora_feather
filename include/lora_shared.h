@@ -18,6 +18,9 @@
 #define TFT_WIDTH        240
 #define TFT_HEIGHT       135
 #define TFT_FONT         FreeSans12pt7b
+#define BUTTON_D0        0
+#define BUTTON_D1        1
+#define BUTTON_D2        2
 
 #define SERIAL_BAUD              115200
 #define STARTUP_DELAY            100
